@@ -21,6 +21,7 @@ async function getStats() {
       guild: logs.guild,
       sport: logs.sport,
       sum: sql`sum(${logs.distance})`.mapWith(Number),
+      entries: sql`count(${logs.distance})`.mapWith(Number)
     })
     .from(logs)
     .groupBy(logs.guild, logs.sport);
@@ -30,15 +31,17 @@ async function getStats() {
       guild: "KIK",
       sport,
       sum: 0,
+      entries: 0,
     };
 
     const sik = stats.find((s) => s.sport === sport && s.guild === "SIK") || {
       guild: "SIK",
       sport,
       sum: 0,
+      entries: 0,
     };
 
-    return { sport, sik_sum: sik.sum, kik_sum: kik.sum };
+    return { sport, sik_sum: sik.sum, kik_sum: kik.sum, sik_entries: sik.entries, kik_entries: kik.entries };
   });
 }
 
