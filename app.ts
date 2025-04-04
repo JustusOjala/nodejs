@@ -9,7 +9,7 @@ const app = express();
 const PORT = 3000;
 
 var corsOptions = {
-  origin: 'https://springbattlestatus-production.up.railway.app',
+  origin: process.env.FRONTEND_URL,
   optionsSuccessStatus: 200
 }
 
