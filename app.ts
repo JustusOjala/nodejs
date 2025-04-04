@@ -3,9 +3,15 @@ import path from 'path';
 import db from "./db/db.ts";
 import { log_events, logs, users } from "./db/schema.ts";
 import { and, sql, eq, between, desc } from "drizzle-orm";
+import cors from 'cors';
 
 const app = express();
 const PORT = 3000;
+
+var corsOptions = {
+  origin: 'https://springbattlestatus-production.up.railway.app/',
+  optionsSuccessStatus: 200
+}
 
 type Guild = "SIK" | "KIK";
 
@@ -49,7 +55,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, './views/index.html'));
 });
 
-app.get('/sports', (req, res) => {
+app.get('/sports', cors(corsOptions), (req, res) => {
   getStats().then((stats) => res.send(stats));
 });
 
