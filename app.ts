@@ -9,9 +9,11 @@ const app = express();
 const PORT = 3000;
 
 var corsOptions = {
-  origin: process.env.FRONTEND_URL,
+  origin: 'https://springbattlestatus-production.up.railway.app',
   optionsSuccessStatus: 200
 }
+
+app.use(cors(corsOptions));
 
 type Guild = "SIK" | "KIK";
 
@@ -19,6 +21,22 @@ enum Sport {
   activity = "Activity",
   biking = "Biking",
   running_walking = "Running/Walking",
+}
+
+async function getParticipants() {
+  /*const user_count = await db
+    .select({
+      guild: users.guild,
+      count: sql`count(${users.id}`
+    })
+    .from(users)
+    .groupBy(users.guild);
+
+  const sik_users = user_count.find((g) => g.guild === "SIK") || {guild: "SIK", count: -1};
+  const kik_users = user_count.find((g) => g.guild === "KIK") || {guild: "KIK", count: -1};
+
+  return [sik_users.count, kik_users.count];*/
+  return [-1, -1]
 }
 
 async function getStats() {
@@ -55,8 +73,12 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, './views/index.html'));
 });
 
-app.get('/sports', cors(corsOptions), (req, res) => {
+app.get('/sports', (req, res) => {
   getStats().then((stats) => res.send(stats));
+});
+
+app.get('/participants', (req, res) => {
+  getParticipants().then((stats) => res.send(stats));
 });
 
 // Catch-all route for handling 404 errors
