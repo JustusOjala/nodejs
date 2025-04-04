@@ -55,7 +55,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, './views/index.html'));
 });
 
-app.get('/sports', cors(), (req, res) => {
+app.get('/sports', cors(corsOptions), (req, res) => {
   getStats().then((stats) => res.send(stats));
 });
 
