@@ -24,19 +24,18 @@ enum Sport {
 }
 
 async function getParticipants() {
-  /*const user_count = await db
+  const user_count = await db
     .select({
       guild: users.guild,
-      count: sql`count(${users.id}`
+      count: sql`count(${users.id})`.mapWith(Number)
     })
     .from(users)
     .groupBy(users.guild);
 
-  const sik_users = user_count.find((g) => g.guild === "SIK") || {guild: "SIK", count: -1};
-  const kik_users = user_count.find((g) => g.guild === "KIK") || {guild: "KIK", count: -1};
+  const sik_users = user_count.find((g) => g.guild === "SIK") || {guild: "SIK", count: 0};
+  const kik_users = user_count.find((g) => g.guild === "KIK") || {guild: "KIK", count: 0};
 
-  return [sik_users.count, kik_users.count];*/
-  return [-1, -1]
+  return [sik_users.count, kik_users.count];
 }
 
 async function getStats() {
