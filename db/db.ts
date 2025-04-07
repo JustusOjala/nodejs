@@ -9,4 +9,10 @@ export const sql = postgres(
 
 const db = drizzle(sql);
 
+console.log("Creating listeners");
+
+await sql.listen('logchange', (x) => {console.log("Logs changed", x)});
+
+await sql.listen('userchange', (x) => console.log("Users changed", x));
+
 export default db;
