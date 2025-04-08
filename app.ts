@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
-import db from "./db/db.ts";
+import db, {Client, log_clients, user_clients} from "./db/db.ts";
+import pg_sql from "./db/db.ts";
 import { log_events, logs, users } from "./db/schema.ts";
 import { and, sql, eq, between, desc } from "drizzle-orm";
 import cors from 'cors';
@@ -76,8 +77,54 @@ app.get('/sports', (req, res) => {
   getStats().then((stats) => res.send(stats));
 });
 
+app.get('/sportNotif', (req, res) => {
+  const headers = {
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'text/event-stream',
+    'Connection': 'keep-alive',
+  }
+  res.writeHead(200, headers);
+
+  const host = req.get('origin')
+
+  const newClient: Client = {
+    id: host,
+    response: res
+  }
+
+  log_clients.push(newClient);
+
+  req.on('close', () => {
+    console.log(`${host} dropped (sports)`);
+    res.end();
+  });
+});
+
 app.get('/participants', (req, res) => {
   getParticipants().then((stats) => res.send(stats));
+});
+
+app.get('/participantNotif', (req, res) => {
+  const headers = {
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'text/event-stream',
+    'Connection': 'keep-alive',
+  }
+  res.writeHead(200, headers);
+
+  const host = req.get('origin')
+
+  const newClient: Client = {
+    id: host,
+    response: res
+  }
+
+  user_clients.push(newClient);
+
+  req.on('close', () => {
+    console.log(`${host} dropped (participants)`);
+    res.end();
+  });
 });
 
 // Catch-all route for handling 404 errors
