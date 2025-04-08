@@ -12,8 +12,28 @@ export interface Client{
   response
 }
 
-export let log_clients: Client[] = [];
-export let user_clients: Client[] = [];
+let log_clients: Client[] = [];
+let user_clients: Client[] = [];
+
+export function addLogClient(client: Client){
+  log_clients.push(client);
+  console.log("Added log client ", client.id)
+}
+
+export function removeLogClient(id: number){
+  log_clients = log_clients.filter(c => c.id !== id)
+  console.log("Removed log client ", id)
+}
+
+export function addUserClient(client: Client){
+  user_clients.push(client);
+  console.log("Added user client ", client.id)
+}
+
+export function removeUserClient(id: number){
+  user_clients = log_clients.filter(c => c.id !== id)
+  console.log("Removed user client ", id)
+}
 
 const db = drizzle(sql);
 

@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import db, {Client, log_clients, user_clients} from "./db/db.ts";
+import db, {Client, addLogClient, removeLogClient, addUserClient, removeUserClient} from "./db/db.ts";
 import pg_sql from "./db/db.ts";
 import { log_events, logs, users } from "./db/schema.ts";
 import { and, sql, eq, between, desc } from "drizzle-orm";
@@ -85,17 +85,18 @@ app.get('/sportnotif', (req, res) => {
   }
   res.writeHead(200, headers);
 
-  const host = res.get('host')
+  const clientId = Date.now()
 
   const newClient: Client = {
-    id: host,
+    id: clientId,
     response: res
   }
 
-  log_clients.push(newClient);
+  addLogClient(newClient);
 
   req.on('close', () => {
-    console.log(`${host} dropped (sports)`);
+    console.log("Sport client ", clientId, "dropped");
+    removeLogClient(clientId);
     res.end();
   });
 });
@@ -112,17 +113,18 @@ app.get('/participantnotif', (req, res) => {
   }
   res.writeHead(200, headers);
 
-  const host = res.get('host')
+  const clientId = Date.now()
 
   const newClient: Client = {
-    id: host,
+    id: clientId,
     response: res
   }
 
-  user_clients.push(newClient);
+  addUserClient(newClient);
 
   req.on('close', () => {
-    console.log(`${host} dropped (participants)`);
+    console.log("Participant client ", clientId, "dropped");
+    removeUserClient(clientId);
     res.end();
   });
 });
