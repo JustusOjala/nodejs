@@ -19,12 +19,12 @@ const db = drizzle(sql);
 
 await sql.listen('logchange', (x) => {
   console.log("Logs changed", x)
-  log_clients.forEach((c) => c.response.write(`logchange\n\n`))
+  log_clients.forEach((c) => c.response.write(`data:logchange\n\n`))
 });
 
 await sql.listen('userchange', (x) => {
   console.log("Users changed", x)
-  user_clients.forEach((c) => c.response.write(`userchange\n\n`))
+  user_clients.forEach((c) => c.response.write(`data:userchange\n\n`))
 });
 
 export default db;

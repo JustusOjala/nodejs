@@ -77,7 +77,7 @@ app.get('/sports', (req, res) => {
   getStats().then((stats) => res.send(stats));
 });
 
-app.get('/sportNotif', (req, res) => {
+app.get('/sportnotif', (req, res) => {
   const headers = {
     'Cache-Control': 'no-cache',
     'Content-Type': 'text/event-stream',
@@ -85,7 +85,7 @@ app.get('/sportNotif', (req, res) => {
   }
   res.writeHead(200, headers);
 
-  const host = req.get('origin')
+  const host = res.get('host')
 
   const newClient: Client = {
     id: host,
@@ -104,7 +104,7 @@ app.get('/participants', (req, res) => {
   getParticipants().then((stats) => res.send(stats));
 });
 
-app.get('/participantNotif', (req, res) => {
+app.get('/participantnotif', (req, res) => {
   const headers = {
     'Cache-Control': 'no-cache',
     'Content-Type': 'text/event-stream',
@@ -112,7 +112,7 @@ app.get('/participantNotif', (req, res) => {
   }
   res.writeHead(200, headers);
 
-  const host = req.get('origin')
+  const host = res.get('host')
 
   const newClient: Client = {
     id: host,
