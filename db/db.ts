@@ -14,6 +14,17 @@ export interface Client{
 
 let clients: Client[] = [];
 
+let statFunction: (sport: Sport) => Promise<{sport: Sport; sik_entries: number; kik_entries: number; sik_sum: number; kik_sum: number }>;
+let userFunction: () => Promise<number[]> = () => Promise[NaN];
+
+export function setStatFunction(func: (sport: Sport) => Promise<{sport: Sport; sik_entries: number; kik_entries: number; sik_sum: number; kik_sum: number }>){
+  statFunction = func;
+}
+
+export function setUserFunction(func: () => Promise<number[]>){
+  userFunction = func;
+}
+
 export function addClient(client: Client){
   clients.push(client);
   console.log("Added client ", client.id)
@@ -33,7 +44,16 @@ await sql.listen('logchange', (x) => {
 
 await sql.listen('userchange', (x) => {
   console.log("Users changed", x)
+  userFunction()
+    .then((count) => {
+      console.log(count)
+      if(count.length == 2){
+        clients.forEach((c) => c.response.write(`data:userchange::${count[0]},${count[1]}\n\n`))
+      }else{
   clients.forEach((c) => c.response.write(`data:userchange\n\n`))
+      }
+    })
+    .catch(() => clients.forEach((c) => c.response.write(`data:userchange\n\n`)))
 });
 
 // A clunky way to get clients to reload remotely after changes

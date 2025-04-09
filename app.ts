@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import db, {Client, addClient, removeClient} from "./db/db.ts";
+import db, {Client, addClient, removeClient, setStatFunction, setUserFunction} from "./db/db.ts";
 import pg_sql from "./db/db.ts";
 import { log_events, logs, users } from "./db/schema.ts";
 import { and, sql, eq, between, desc } from "drizzle-orm";
@@ -24,7 +24,7 @@ enum Sport {
   running_walking = "Running/Walking",
 }
 
-async function getParticipants() {
+async function getUsers() {
   const user_count = await db
     .select({
       guild: users.guild,
@@ -69,6 +69,13 @@ async function getStats() {
   });
 }
 
+async function getStat(sport: Sport){
+  return { sport:Sport.biking, sik_sum: 1.0, kik_sum: 0.0, sik_entries: 0, kik_entries: 0}
+}
+
+setStatFunction(getStat);
+setUserFunction(getUsers);
+
 app.get('/', (req, res) => {
   res.send("You seem to be lost.");
 });
@@ -78,7 +85,7 @@ app.get('/sports', (req, res) => {
 });
 
 app.get('/participants', (req, res) => {
-  getParticipants().then((stats) => res.send(stats));
+  getUsers().then((stats) => res.send(stats));
 });
 
 app.get('/notifications', (req, res) => {
