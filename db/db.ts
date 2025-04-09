@@ -53,15 +53,15 @@ await sql.listen('logchange', (x) => {
   log_clients.forEach((c) => c.response.write(`data:logchange\n\n`))
 });
 
-await sql.listen('userchange', (x) => user_clients.forEach((c) => c.response.write(`data:userchange\n\n`)));
+await sql.listen('userchange', (x) => {
+  console.log("Users changed", x)
+  user_clients.forEach((c) => c.response.write(`data:userchange\n\n`))
+});
 
 // A clunky way to get clients to reload remotely after changes
 await sql.listen('reload', () => {
   console.log("Asking connected clients to reload")
-  reload_clients.forEach((c) => {
-    console.log(`Asking ${c.id}`)
-    c.response.write("data:reload\n\n")
-})
+  reload_clients.forEach((c) => c.response.write("data:reload\n\n"))
 })
 
 export default db;
