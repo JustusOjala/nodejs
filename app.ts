@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import db, {Client, addLogClient, removeLogClient, addUserClient, removeUserClient, addReloadClient, removeReloadClient} from "./db/db.ts";
+import db, {Client, addClient, removeClient} from "./db/db.ts";
 import pg_sql from "./db/db.ts";
 import { log_events, logs, users } from "./db/schema.ts";
 import { and, sql, eq, between, desc } from "drizzle-orm";
@@ -77,35 +77,11 @@ app.get('/sports', (req, res) => {
   getStats().then((stats) => res.send(stats));
 });
 
-app.get('/sportnotif', (req, res) => {
-  const headers = {
-    'Cache-Control': 'no-cache',
-    'Content-Type': 'text/event-stream',
-    'Connection': 'keep-alive',
-  }
-  res.writeHead(200, headers);
-
-  const clientId = Date.now()
-
-  const newClient: Client = {
-    id: clientId,
-    response: res
-  }
-
-  addLogClient(newClient);
-
-  req.on('close', () => {
-    console.log("Sport client ", clientId, "dropped");
-    removeLogClient(clientId);
-    res.end();
-  });
-});
-
 app.get('/participants', (req, res) => {
   getParticipants().then((stats) => res.send(stats));
 });
 
-app.get('/participantnotif', (req, res) => {
+app.get('/notifications', (req, res) => {
   const headers = {
     'Cache-Control': 'no-cache',
     'Content-Type': 'text/event-stream',
@@ -120,35 +96,11 @@ app.get('/participantnotif', (req, res) => {
     response: res
   }
 
-  addUserClient(newClient);
+  addClient(newClient);
 
   req.on('close', () => {
-    console.log("Participant client ", clientId, "dropped");
-    removeUserClient(clientId);
-    res.end();
-  });
-});
-
-app.get('/reload', (req, res) => {
-  const headers = {
-    'Cache-Control': 'no-cache',
-    'Content-Type': 'text/event-stream',
-    'Connection': 'keep-alive',
-  }
-  res.writeHead(200, headers);
-
-  const clientId = Date.now()
-
-  const newClient: Client = {
-    id: clientId,
-    response: res
-  }
-
-  addReloadClient(newClient);
-
-  req.on('close', () => {
-    console.log("Participant client ", clientId, "dropped");
-    removeReloadClient(clientId);
+    console.log("Client ", clientId, "dropped");
+    removeClient(clientId);
     res.end();
   });
 });
