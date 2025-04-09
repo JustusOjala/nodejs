@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import db, {Client, addLogClient, removeLogClient, addUserClient, removeUserClient} from "./db/db.ts";
+import db, {Client, addLogClient, removeLogClient, addUserClient, removeUserClient, addReloadClient, removeReloadClient} from "./db/db.ts";
 import pg_sql from "./db/db.ts";
 import { log_events, logs, users } from "./db/schema.ts";
 import { and, sql, eq, between, desc } from "drizzle-orm";
@@ -10,7 +10,7 @@ const app = express();
 const PORT = 3000;
 
 var corsOptions = {
-  origin: 'https://springbattlestatus-production.up.railway.app',
+  origin: 'http://localhost:5173',
   optionsSuccessStatus: 200
 }
 
@@ -70,7 +70,7 @@ async function getStats() {
 }
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, './views/index.html'));
+  res.send("You seem to be lost.");
 });
 
 app.get('/sports', (req, res) => {
@@ -129,9 +129,33 @@ app.get('/participantnotif', (req, res) => {
   });
 });
 
+app.get('/reload', (req, res) => {
+  const headers = {
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'text/event-stream',
+    'Connection': 'keep-alive',
+  }
+  res.writeHead(200, headers);
+
+  const clientId = Date.now()
+
+  const newClient: Client = {
+    id: clientId,
+    response: res
+  }
+
+  addReloadClient(newClient);
+
+  req.on('close', () => {
+    console.log("Participant client ", clientId, "dropped");
+    removeReloadClient(clientId);
+    res.end();
+  });
+});
+
 // Catch-all route for handling 404 errors
 app.use((req, res, next) => {
-    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+    res.status(404).send("Path not found");
   });
 
 app.listen(PORT, '::', () => {

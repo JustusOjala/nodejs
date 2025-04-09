@@ -14,6 +14,7 @@ export interface Client{
 
 let log_clients: Client[] = [];
 let user_clients: Client[] = [];
+let reload_clients: Client[] = [];
 
 export function addLogClient(client: Client){
   log_clients.push(client);
@@ -35,6 +36,16 @@ export function removeUserClient(id: number){
   console.log("Removed user client ", id)
 }
 
+export function addReloadClient(client: Client){
+  reload_clients.push(client);
+  console.log("Added reload client ", client.id)
+}
+
+export function removeReloadClient(id: number){
+  reload_clients = log_clients.filter(c => c.id !== id)
+  console.log("Removed reload client ", id)
+}
+
 const db = drizzle(sql);
 
 await sql.listen('logchange', (x) => {
@@ -42,9 +53,15 @@ await sql.listen('logchange', (x) => {
   log_clients.forEach((c) => c.response.write(`data:logchange\n\n`))
 });
 
-await sql.listen('userchange', (x) => {
-  console.log("Users changed", x)
-  user_clients.forEach((c) => c.response.write(`data:userchange\n\n`))
-});
+await sql.listen('userchange', (x) => user_clients.forEach((c) => c.response.write(`data:userchange\n\n`)));
+
+// A clunky way to get clients to reload remotely after changes
+await sql.listen('reload', () => {
+  console.log("Asking connected clients to reload")
+  reload_clients.forEach((c) => {
+    console.log(`Asking ${c.id}`)
+    c.response.write("data:reload\n\n")
+})
+})
 
 export default db;
