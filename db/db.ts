@@ -12,9 +12,19 @@ export interface Client{
   response
 }
 
+enum Sport {
+  activity = "Activity",
+  biking = "Biking",
+  running_walking = "Running/Walking"
+}
+
 let clients: Client[] = [];
 
-let statFunction: (sport: Sport) => Promise<{sport: Sport; sik_entries: number; kik_entries: number; sik_sum: number; kik_sum: number }>;
+async function nullStat(sport: Sport): Promise<{sport: Sport; sik_entries: number; kik_entries: number; sik_sum: number; kik_sum: number }>{
+  return {sport: Sport.biking, sik_entries: NaN, kik_entries: NaN, sik_sum: NaN, kik_sum: NaN };
+}
+
+let statFunction: (sport: Sport) => Promise<{sport: Sport; sik_entries: number; kik_entries: number; sik_sum: number; kik_sum: number }> = nullStat;
 let userFunction: () => Promise<number[]> = () => Promise[NaN];
 
 export function setStatFunction(func: (sport: Sport) => Promise<{sport: Sport; sik_entries: number; kik_entries: number; sik_sum: number; kik_sum: number }>){
@@ -39,18 +49,37 @@ const db = drizzle(sql);
 
 await sql.listen('logchange', (x) => {
   console.log("Logs changed", x)
-  clients.forEach((c) => c.response.write(`data:logchange\n\n`))
+  let jsondata;
+  try{
+    jsondata = JSON.parse(x);
+  }catch{
+    jsondata = {sport: NaN};
+  }
+  
+  const sport: Sport = jsondata.sport;
+  if(!Number.isNaN(sport)){
+    console.log("\tThe sport modified was", sport)
+    statFunction(sport)
+      .then((result) => clients.forEach((c) => c.response.write(`data:logchange::${JSON.stringify(result)}\n\n`)))
+      .catch(() =>{
+        console.log("\t\tCould not get sport info");
+        clients.forEach((c) => c.response.write(`data:logchange\n\n`))    
+      })
+  }else{
+    console.log("\tSport information not in notification")
+    clients.forEach((c) => c.response.write(`data:logchange\n\n`))
+  }
 });
 
 await sql.listen('userchange', (x) => {
   console.log("Users changed", x)
   userFunction()
     .then((count) => {
-      console.log(count)
+      console.log("\tnew users", count)
       if(count.length == 2){
         clients.forEach((c) => c.response.write(`data:userchange::${count[0]},${count[1]}\n\n`))
       }else{
-  clients.forEach((c) => c.response.write(`data:userchange\n\n`))
+        clients.forEach((c) => c.response.write(`data:userchange\n\n`))
       }
     })
     .catch(() => clients.forEach((c) => c.response.write(`data:userchange\n\n`)))

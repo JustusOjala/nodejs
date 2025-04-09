@@ -10,7 +10,7 @@ const app = express();
 const PORT = 3000;
 
 var corsOptions = {
-  origin: 'https://springbattlestatus-production.up.railway.app',
+  origin: 'http://localhost:5173',
   optionsSuccessStatus: 200
 }
 
@@ -21,7 +21,7 @@ type Guild = "SIK" | "KIK";
 enum Sport {
   activity = "Activity",
   biking = "Biking",
-  running_walking = "Running/Walking",
+  running_walking = "Running/Walking"
 }
 
 async function getUsers() {
@@ -70,7 +70,9 @@ async function getStats() {
 }
 
 async function getStat(sport: Sport){
-  return { sport:Sport.biking, sik_sum: 1.0, kik_sum: 0.0, sik_entries: 0, kik_entries: 0}
+  const stats = await getStats()
+  
+  return stats.find((s) => s.sport === sport) || {sport: sport, sik_sum: NaN, kik_sum: NaN, sik_entries: NaN, kik_entries: NaN}
 }
 
 setStatFunction(getStat);
