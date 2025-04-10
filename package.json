@@ -7,7 +7,6 @@
   "author": "alphasec",
   "license": "MIT",
   "dependencies": {
-    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "drizzle-orm": "^0.30.6",
     "express": "^4.19.2",

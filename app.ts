@@ -4,17 +4,9 @@ import db, {Client, addClient, removeClient, setStatFunction, setUserFunction} f
 import pg_sql from "./db/db.ts";
 import { log_events, logs, users } from "./db/schema.ts";
 import { and, sql, eq, between, desc } from "drizzle-orm";
-import cors from 'cors';
 
 const app = express();
 const PORT = 3000;
-
-var corsOptions = {
-  origin: 'https://springbattlestatus-production.up.railway.app',
-  optionsSuccessStatus: 200
-}
-
-app.use(cors(corsOptions));
 
 type Guild = "SIK" | "KIK";
 
