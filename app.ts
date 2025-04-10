@@ -90,6 +90,8 @@ app.get('/notifications', (req, res) => {
   }
   res.writeHead(200, headers);
 
+  res.write("data:initstream\n\n")
+
   const clientId = Date.now()
 
   const newClient: Client = {
