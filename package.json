@@ -9,7 +9,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "drizzle-orm": "^0.30.6",
-    "express": "^4.19.2",
+    "express": "^5.1.0",
     "mysql": "^2.18.1",
     "node-cron": "^3.0.3",
     "postgres": "^3.3.4",
