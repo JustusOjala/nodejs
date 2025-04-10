@@ -6,7 +6,7 @@ import { log_events, logs, users } from "./db/schema.ts";
 import { and, sql, eq, between, desc } from "drizzle-orm";
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 type Guild = "SIK" | "KIK";
 
