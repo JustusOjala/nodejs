@@ -7,6 +7,7 @@ import { and, sql, eq, between, desc } from "drizzle-orm";
 
 const app = express();
 const PORT = process.env.PORT;
+const SSE_INTERVAL: number = Number(process.env.SSE_INTERVAL) || 15000;
 
 type Guild = "SIK" | "KIK";
 
