@@ -92,11 +92,21 @@ app.get('/notifications', (req, res) => {
 
   res.write("data:initstream\n\n")
 
+  const ping = setInterval(() => {
+    res.write(`data:ping::${new Date(Date.now()).toISOString()}\n\n`);
+  }, SSE_INTERVAL);
+
+  const sender = (data: string) => {
+    clearInterval(ping);
+    res.write(`data:${data}\n\n`);
+    return 0;
+  }
+
   const clientId = Date.now()
 
   const newClient: Client = {
     id: clientId,
-    response: res
+    push: sender
   }
 
   addClient(newClient);

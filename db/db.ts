@@ -9,7 +9,7 @@ export const sql = postgres(
 
 export interface Client{
   id: number,
-  response
+  push: (string) => number
 }
 
 enum Sport {
@@ -60,14 +60,14 @@ await sql.listen('logchange', (x) => {
   if(!Number.isNaN(sport)){
     console.log("\tThe sport modified was", sport)
     statFunction(sport)
-      .then((result) => clients.forEach((c) => c.response.write(`data:logchange::${JSON.stringify(result)}\n\n`)))
+      .then((result) => clients.forEach((c) => c.push(`logchange::${JSON.stringify(result)}`)))
       .catch(() =>{
         console.log("\t\tCould not get sport info");
-        clients.forEach((c) => c.response.write(`data:logchange\n\n`))    
+        clients.forEach((c) => c.push(`logchange`))    
       })
   }else{
     console.log("\tSport information not in notification")
-    clients.forEach((c) => c.response.write(`data:logchange\n\n`))
+    clients.forEach((c) => c.push(`data:logchange`))
   }
 });
 
@@ -77,18 +77,18 @@ await sql.listen('userchange', (x) => {
     .then((count) => {
       console.log("\tnew users", count)
       if(count.length == 2){
-        clients.forEach((c) => c.response.write(`data:userchange::${count[0]},${count[1]}\n\n`))
+        clients.forEach((c) => c.push(`userchange::${count[0]},${count[1]}`))
       }else{
-        clients.forEach((c) => c.response.write(`data:userchange\n\n`))
+        clients.forEach((c) => c.push(`userchange`))
       }
     })
-    .catch(() => clients.forEach((c) => c.response.write(`data:userchange\n\n`)))
+    .catch(() => clients.forEach((c) => c.push(`userchange`)))
 });
 
 // A clunky way to get clients to reload remotely after changes
 await sql.listen('reload', () => {
   console.log("Asking connected clients to reload")
-  clients.forEach((c) => c.response.write("data:reload\n\n"))
+  clients.forEach((c) => c.push("reload"))
 })
 
 export default db;
