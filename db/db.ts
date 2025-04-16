@@ -14,6 +14,7 @@ export interface Client{
 
 enum Sport {
   activity = "Activity",
+  steps = "Steps",
   biking = "Biking",
   running_walking = "Running/Walking"
 }
