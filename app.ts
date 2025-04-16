@@ -12,7 +12,6 @@ const SSE_INTERVAL: number = Number(process.env.SSE_INTERVAL) || 15000;
 type Guild = "SIK" | "KIK";
 
 enum Sport {
-  activity = "Activity",
   steps = "Steps",
   biking = "Biking",
   running_walking = "Running/Walking"
