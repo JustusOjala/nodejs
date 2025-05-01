@@ -23,7 +23,7 @@
     "prettier": "^2.8.6",
     "ts-node": "^10.9.1",
     "tsx": "^4.7.1",
-    "typescript": "^5.0.2"
+    "typescript": "^5.8.3"
   },
   "scripts": {
     "start": "node --import=tsx app.ts"
